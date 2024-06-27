@@ -1,3 +1,4 @@
+#dopredna kinematika - DH notace
 import math as m
 import numpy as np
 
@@ -6,11 +7,11 @@ from sympy import *
 class ForwardKinematics:
 
     def __init__(self, th_1, th_2, th_3, th_4, th_5, th_6):
-        self.a = [0.025, 0.455, 0.035, 0, 0, 0]
-        self.d = [0.4, 0, 0, 0.420, 0, 0.08]
-        self.alpha = [np.deg2rad(90), np.deg2rad(0), np.deg2rad(90), np.deg2rad(-90), np.deg2rad(90), np.deg2rad(0)]
+        self.a = [0.025, 0.455, 0.035, 0, 0, 0] #hodnoty a pro danou robotickou ruku (Kuka KR6 R 900)
+        self.d = [0.4, 0, 0, 0.420, 0, 0.08] #hodnoty d
+        self.alpha = [np.deg2rad(90), np.deg2rad(0), np.deg2rad(90), np.deg2rad(-90), np.deg2rad(90), np.deg2rad(0)] #hodnoty alpha
         self.A = []
-        self.theta = (th_1, th_2, th_3 + np.deg2rad(90), th_4, th_5, th_6)
+        self.theta = (th_1, th_2, th_3 + np.deg2rad(90), th_4, th_5, th_6) #hodnoty theta
 
     def GetEndJoint(self):
         pos = np.eye(4, dtype=float)
@@ -20,7 +21,7 @@ class ForwardKinematics:
                            [m.sin(self.theta[i]), m.cos(self.alpha[i]) * m.cos(self.theta[i]),
                             -m.sin(self.alpha[i]) * m.cos(self.theta[i]), self.a[i] * m.sin(self.theta[i])],
                            [0, m.sin(self.alpha[i]), m.cos(self.alpha[i]), self.d[i]],
-                           [0, 0, 0, 1]])
+                           [0, 0, 0, 1]]) #DH matice
         return self.A
 
     def endpoint(self):
@@ -29,7 +30,7 @@ class ForwardKinematics:
         pos = np.eye(4)
         for i in range(6):
             pos = np.matmul(pos, A[i])
-        return pos
+        return pos #pronasobeni matic
 
     def endpointfor3(self):
         A = np.eye(4)
@@ -40,7 +41,7 @@ class ForwardKinematics:
         return pos
 
 
-class ForwardKinematicssym:
+class ForwardKinematicssym: #dopredna kinematika obecne
 
     def __init__(self, th_1, th_2, th_3, th_4, th_5, th_6):
         self.a = [0.025, 0.455, 0.035, 0, 0, 0]
@@ -66,28 +67,28 @@ class ForwardKinematicssym:
         return A[i]
 
 
-class InverseKinematics:
+class InverseKinematics: #inverzni kinematika
     def __init__(self, matrix):
 
         self.matrix = matrix
 
 
-    def first3positions(self):
+    def first3positions(self): #vypocet prvnich 3 kloubu
         enjoint = np.eye(4, dtype=np.float64)
-        enjoint [2,3] = -0.08
+        enjoint [2,3] = -0.08 #rozmer koncoveho clenu
 
-        newmat = np.matmul(enjoint, matrix)
+        newmat = np.matmul(enjoint, matrix) #ziskani koncove pozice bez koncoveho clenu
 
         xc = newmat[0,3]
         yc = newmat[1,3]
         zc = newmat[2,3]
 
 
-        theta1 = m.atan2(yc, xc)
-        xcnew = xc * m.cos(-theta1)-yc * m.sin(-theta1)
+        theta1 = m.atan2(yc, xc) #uhel 1 dan pozici yc,xc
+        xcnew = xc * m.cos(-theta1)-yc * m.sin(-theta1) #matematicke posunuti uhlu 1 do 0
         ycnew = yc * m.cos(-theta1)-xc * m.sin(-theta1)
 
-        L1 = abs(xcnew-0.025)
+        L1 = abs(xcnew-0.025) #dal geometricke dopocitani uhlu 2,3
         L4 = abs(zc-0.4)
         L2 = m.sqrt(L1**2+L4**2)
         L3 = m.sqrt(0.420**2+0.035**2)
@@ -126,7 +127,7 @@ class InverseKinematics:
         pos = FWD3.endpoint()
 
 
-        Tpos = np.transpose(pos[0:3, 0:3])
+        Tpos = np.transpose(pos[0:3, 0:3]) #dal dopocitani uhlu 4,5,6
         wristorientation = np.matmul(self.matrix[0:3,0:3], Tpos)
         if m.atan2(wristorientation[2, 2], m.sqrt(1-wristorientation[2, 2]**2))>0:
             theta5 = m.atan2(wristorientation[2, 2], m.sqrt(1 - wristorientation[2, 2] ** 2))
@@ -162,7 +163,7 @@ def getAi():
         A.append(mat.Aimat(i))
     return A
 
-def calculate_matrix(x, y, z, alpha, beta, gamma):
+def calculate_matrix(x, y, z, alpha, beta, gamma): #vytvoreni matice polohy ze zadanych souradnic
     matrix = np.eye(4, dtype=np.float64)
     alpha = np.deg2rad(alpha)
     beta = np.deg2rad(beta)
@@ -194,6 +195,7 @@ def calculate_matrix(x, y, z, alpha, beta, gamma):
 
 
 test = getAi()
+#souradnice X,Y,Z rotace okolo X,Y,Z
 x = 0.98
 y = 0
 z = 0.435

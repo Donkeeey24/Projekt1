@@ -1,3 +1,5 @@
+#vytvoření jacobiho matic k zjištění rychlosti koncového členu, uložení jako dill soubor
+
 import dill
 import sympy as sym
 import numpy as np
@@ -50,6 +52,9 @@ T4 = Amat[0] @ Amat[1] @ Amat[2] @ Amat[3]
 T5 = Amat[0] @ Amat[1] @ Amat[2] @ Amat[3] @ Amat[4]
 T6 = Amat[0] @ Amat[1] @ Amat[2] @ Amat[3] @ Amat[4] @ Amat[5]
 
+#doteď dopředná kinematika, chtělo by to vzít ze souboru Kinematika.py
+#následující rovnice pro výpočet jacobiho matice
+
 z0= np.array([0,0,1])
 z1 = Amat[1][:3,2]
 z2 = T2[:3,2]
@@ -78,4 +83,4 @@ J = Matrix([
 f = lambdify('th1, th2, th3, th4, th5, th6', J, 'numpy')
 
 dill.settings['recurse'] = True
-dill.dump(f, open("jacobian", "wb"))
+dill.dump(f, open("jacobian", "wb")) #uložení výsledku v dill souboru 

@@ -143,7 +143,7 @@ class InverseKinematics:
         else:
             theta6 = m.atan2(wristorientation[2, 0], -wristorientation[2, 1])
 
-        return (np.rad2deg(theta1), np.rad2deg(theta2), np.rad2deg(theta3), np.rad2deg(theta4), np.rad2deg(theta5), np.rad2deg(theta6))
+        return (np.rad2deg(theta1), np.rad2deg(theta2), np.rad2deg(theta3), np.rad2deg(theta4)+90, np.rad2deg(theta5)-90, np.rad2deg(theta6)+90)
 
 
 q1 = symbols("q1")
